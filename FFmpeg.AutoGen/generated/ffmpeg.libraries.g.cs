@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 
-namespace FFmpeg.AutoGen;
-
-public static unsafe partial class ffmpeg
+namespace FFmpeg.AutoGen
 {
-    public static Dictionary<string, int> LibraryVersionMap = new Dictionary<string, int>
+
+    public static unsafe partial class ffmpeg
+    {
+        public static Dictionary<string, int> LibraryVersionMap = new Dictionary<string, int>
     {
         {"avcodec", 60},
         {"avdevice", 60},
@@ -15,4 +16,5 @@ public static unsafe partial class ffmpeg
         {"swresample", 4},
         {"swscale", 7},
     };
+    }
 }
