@@ -60,44 +60,31 @@ namespace FFmpeg.AutoGen
 
         public IntPtr GetOrLoadLibrary(string libraryName, bool throwOnError)
         {
-            Console.WriteLine("1");
             if (_loadedLibraries.TryGetValue(libraryName, out var ptr)) return ptr;
-            Console.WriteLine("2");
 
             lock (_syncRoot)
             {
-                Console.WriteLine("3");
                 if (_loadedLibraries.TryGetValue(libraryName, out ptr)) return ptr;
-                Console.WriteLine("4");
 
                 var dependencies = LibraryDependenciesMap[libraryName];
-                Console.WriteLine("5");
                 dependencies.Where(n => !_loadedLibraries.ContainsKey(n) && !n.Equals(libraryName))
                     .ToList()
                     .ForEach(n => GetOrLoadLibrary(n, false));
-                Console.WriteLine("6");
 
                 var version = ffmpeg.LibraryVersionMap[libraryName];
-                Console.WriteLine("7");
                 var nativeLibraryName = GetNativeLibraryName(libraryName, version);
-                Console.WriteLine("8");
                 var libraryPath = Path.Combine(ffmpeg.RootPath, nativeLibraryName);
-                Console.WriteLine(libraryPath);
                 ptr = LoadNativeLibrary(libraryPath);
 
-                Console.WriteLine("Error code: " + Marshal.GetLastWin32Error());
                 if (ptr != IntPtr.Zero)
                 {
-                    Console.WriteLine("We are not returning IntPtr.Zero here");
                     _loadedLibraries.Add(libraryName, ptr);
                 }
                 else if (throwOnError)
                 {
-                    Console.WriteLine("11");
                     throw new DllNotFoundException(
                         $"Unable to load DLL '{libraryName}.{version} under {ffmpeg.RootPath}': The specified module could not be found.");
                 }
-                Console.WriteLine("12");
 
                 return ptr;
             }
